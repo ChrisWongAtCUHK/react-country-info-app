@@ -1,30 +1,27 @@
 import { useEffect, useState } from 'react'
 
 function Countries() {
-  const [countries, setCountries] = useState([])
   const countriesPerPage = 5
+  const [countries, setCountries] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
-
-  const indexOfLastItem = currentPage * countriesPerPage
-  const indexOfFirstItem = indexOfLastItem - countriesPerPage
-
-  const currentCountries = countries.slice(indexOfFirstItem, indexOfLastItem)
-
+  const [sortedCountries, setSortedCountries] = useState([])
+  const [currentCountries, setCurrentCountries] = useState([])
   const [totalPageCount, setTotalPageCount] = useState(1)
   const [rangeWithDots, setRangeWithDots] = useState([])
+  const [sortDir, setSortDir] = useState('name')
 
-  const getPagination = () => {
+  const setPagination = (count) => {
     const delta = 2 // Pages to show on each side of currentPage
     const range = []
     const r = []
 
     let l
 
-    for (let i = 1; i <= totalPageCount; i++) {
+    for (let i = 1; i <= count; i++) {
       // Condition: Always show first, last, and pages within delta of currentPage
       if (
         i === 1 ||
-        i === totalPageCount ||
+        i === count ||
         (i >= currentPage - delta && i <= currentPage + delta)
       ) {
         range.push(i)
@@ -40,18 +37,53 @@ function Countries() {
         }
       }
       r.push(i)
-      
+
       l = i
     }
     setRangeWithDots(r)
   }
 
+  const setPagedCountries = (page, data) => {
+    const indexOfLastItem = page * countriesPerPage
+    const indexOfFirstItem = indexOfLastItem - countriesPerPage
+    const c = data.slice(indexOfFirstItem, indexOfLastItem)
+    
+    setCurrentCountries(c)
+  }
+
   const handlePageChange = (page) => {
-    if(page === '...') {
+    if (page === '...') {
       return
     }
+    
     setCurrentPage(page)
-    getPagination()
+    setPagedCountries(page, sortedCountries.length === 0 ? [...countries] : [...sortedCountries])
+    setPagination(totalPageCount)
+  }
+
+  const handleSort = (key) => {
+    const c = [...countries]
+    let direction = sortDir
+    if (sortDir === 'ascending' && sortedCountries.length !== 0) {
+      direction = 'descending'
+    } else {
+      direction = 'ascending'
+    }
+
+    c.sort((a, b) => {
+      const nameA = a[key]
+      const nameB = b[key]
+      if (nameA['common'] < nameB['common']) {
+        return direction === 'ascending' ? -1 : 1
+      }
+      if (nameA['common'] > nameB['common']) {
+        return direction === 'ascending' ? 1 : -1
+      }
+    })
+
+    setSortedCountries(c)
+    setPagedCountries(currentPage, [...c])
+    setSortDir(direction)
   }
 
   useEffect(() => {
@@ -59,12 +91,14 @@ function Countries() {
     fetch(allURL)
       .then((response) => response.json())
       .then((data) => {
+        const count = Math.ceil(data.length / countriesPerPage)
         setCountries(data)
-        setTotalPageCount(Math.ceil(countries.length / countriesPerPage))
-        getPagination()
+        setTotalPageCount(count)
+        setPagedCountries(currentPage, data)
+        setPagination(count)
       })
       .catch(() => {})
-  })
+  }, [])
 
   return (
     <div className='max-w-4xl mx-auto my-8 p-4 shadow-lg rounded-lg bg-white'>
@@ -72,7 +106,13 @@ function Countries() {
         <thead className='bg-blue-100'>
           <tr>
             <th className='px-6 py-3 font-medium text-gray-700'>Flag</th>
-            <th className='px-6 py-3 font-medium text-gray-700'>Name</th>
+            <th
+              className='px-6 py-3 font-medium text-gray-700'
+              onClick={() => handleSort('name')}
+              style={{ cursor: 'pointer' }}
+            >
+              Name{sortDir === 'ascending' ? '🔼' : '🔽'}
+            </th>
           </tr>
         </thead>
         <tbody>
