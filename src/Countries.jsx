@@ -2,13 +2,15 @@ import { useEffect, useState } from 'react'
 
 function Countries() {
   const [countries, setCountries] = useState([])
-  const itemsPerPage = 5
+  const countriesPerPage = 5
   const [currentPage, setCurrentPage] = useState(1)
 
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const indexOfLastItem = currentPage * countriesPerPage
+  const indexOfFirstItem = indexOfLastItem - countriesPerPage
 
   const currentCountries = countries.slice(indexOfFirstItem, indexOfLastItem)
+
+  const [totalPageCount, setTotalPageCount] = useState(1)
 
   const handlePageChange = (page) => {
     setCurrentPage(page)
@@ -20,6 +22,7 @@ function Countries() {
       .then((response) => response.json())
       .then((data) => {
         setCountries(data)
+        setTotalPageCount(Math.ceil(countries.length / countriesPerPage))
       })
       .catch(() => {})
   })
@@ -35,9 +38,13 @@ function Countries() {
         </thead>
         <tbody>
           {currentCountries.map((country) => (
-            <tr key={country.id} className='border-b hover:bg-gray-50'>
+            <tr key={country.name.common} className='border-b hover:bg-gray-50'>
               <td className='px-6 py-3'>
-                <img className="w-full max-w-18.75 aspect-square rounded-md object-cover" src={country.flags.svg} alt='Flag' />
+                <img
+                  className='w-full max-w-18.75 aspect-square rounded-md object-cover'
+                  src={country.flags.svg}
+                  alt='Flag'
+                />
               </td>
               <td className='px-6 py-3'>{country.name.common}</td>
             </tr>
@@ -55,15 +62,54 @@ function Countries() {
           Previous
         </button>
         <div className='text-gray-700'>
-          Page {currentPage} of {Math.ceil(countries.length / itemsPerPage)}
+          <div>
+            Page {currentPage} of {totalPageCount}
+          </div>
         </div>
         <button
           onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === Math.ceil(countries.length / itemsPerPage)}
+          disabled={
+            currentPage === Math.ceil(countries.length / countriesPerPage)
+          }
           className='px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-700 disabled:opacity-50'
         >
           Next
         </button>
+      </div>
+
+      <div className='mt-4 flex row'>
+        <button
+          onClick={() => handlePageChange(1)}
+          className='rounded-md rounded-r-none bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none'
+          type='button'
+        >
+          1
+        </button>
+        {Array.from({ length: totalPageCount - 2 }, (_, i) => i + 2).map(
+          (index) => {
+            return (
+              <button
+                key={index}
+                onClick={() => handlePageChange(index)}
+                className='rounded-none bg-slate-800 py-2 px-4 border-l border-r border-slate-700 text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none'
+                type='button'
+              >
+                {index}
+              </button>
+            )
+          },
+        )}
+        {Math.ceil(countries.length / countriesPerPage) > 1 ? (
+          <button
+            onClick={() =>
+              handlePageChange(Math.ceil(countries.length / countriesPerPage))
+            }
+            className='rounded-md rounded-l-none bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none'
+            type='button'
+          >
+            {Math.ceil(countries.length / countriesPerPage)}
+          </button>
+        ) : null}
       </div>
     </div>
   )
