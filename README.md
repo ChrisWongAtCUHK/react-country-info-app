@@ -1,5 +1,7 @@
 # [Country Information React Application](https://www.geeksforgeeks.org/reactjs/react-application-that-provides-country-information/)
 
+# [How to create a table in ReactJS ?](https://www.geeksforgeeks.org/reactjs/how-to-create-a-table-in-reactjs/)
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
