@@ -10,20 +10,16 @@ function Countries() {
   const [rangeWithDots, setRangeWithDots] = useState([])
   const [sortDir, setSortDir] = useState('name')
 
-  const setPagination = (count) => {
-    const delta = 2 // Pages to show on each side of currentPage
+  const setPagination = (count, page) => {
+    const delta = 2 // Pages to show on each side of current page
     const range = []
     const r = []
 
     let l
 
     for (let i = 1; i <= count; i++) {
-      // Condition: Always show first, last, and pages within delta of currentPage
-      if (
-        i === 1 ||
-        i === count ||
-        (i >= currentPage - delta && i <= currentPage + delta)
-      ) {
+      // Condition: Always show first, last, and pages within delta of current page
+      if (i === 1 || i === count || (i >= page - delta && i <= page + delta)) {
         range.push(i)
       }
     }
@@ -47,7 +43,7 @@ function Countries() {
     const indexOfLastItem = page * countriesPerPage
     const indexOfFirstItem = indexOfLastItem - countriesPerPage
     const c = data.slice(indexOfFirstItem, indexOfLastItem)
-    
+
     setCurrentCountries(c)
   }
 
@@ -55,10 +51,13 @@ function Countries() {
     if (page === '...') {
       return
     }
-    
+
     setCurrentPage(page)
-    setPagedCountries(page, sortedCountries.length === 0 ? [...countries] : [...sortedCountries])
-    setPagination(totalPageCount)
+    setPagedCountries(
+      page,
+      sortedCountries.length === 0 ? [...countries] : [...sortedCountries],
+    )
+    setPagination(totalPageCount, page)
   }
 
   const handleSort = (key) => {
@@ -95,10 +94,10 @@ function Countries() {
         setCountries(data)
         setTotalPageCount(count)
         setPagedCountries(currentPage, data)
-        setPagination(count)
+        setPagination(count, currentPage)
       })
       .catch(() => {})
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -159,7 +158,7 @@ function Countries() {
 
       {/* Pagination group buttons */}
       <div className='mt-4 flex row'>
-        {rangeWithDots.map((page) => {
+        {rangeWithDots.map((page, index) => {
           const className =
             page === 1
               ? 'rounded-md rounded-r-none bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none'
@@ -169,7 +168,7 @@ function Countries() {
 
           return (
             <button
-              key={page}
+              key={index}
               onClick={() => handlePageChange(page)}
               className={className}
               type='button'
