@@ -15,7 +15,7 @@ function CountryInformation() {
       return
     }
 
-    const finalURL = `https://restcountries.com/v3.1/name/${countryName.trim()}`
+    const finalURL = `https://restcountries.com/v3.1/name/${countryName.trim()}?fullText=true`
     fetch(finalURL)
       .then((response) => response.json())
       .then((data) => {
