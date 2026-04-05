@@ -1,6 +1,16 @@
-import './App.css'
+import { useEffect } from 'react'
 
-function App() {
+function Countries() {
+  useEffect(() => {
+    const allURL = `https://restcountries.com/v3.1/all?fields=name,flags`
+    fetch(allURL)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data)
+      })
+      .catch(() => {})
+  })
+
   return (
     <div className='App'>
       <h1>TODO: list all countries</h1>
@@ -8,4 +18,4 @@ function App() {
   )
 }
 
-export default App
+export default Countries
