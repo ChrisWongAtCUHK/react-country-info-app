@@ -47,6 +47,9 @@ function Countries() {
   }
 
   const handlePageChange = (page) => {
+    if(page === '...') {
+      return
+    }
     setCurrentPage(page)
     getPagination()
   }
