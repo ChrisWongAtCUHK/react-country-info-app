@@ -37,7 +37,7 @@ function Countries() {
           {currentCountries.map((country) => (
             <tr key={country.id} className='border-b hover:bg-gray-50'>
               <td className='px-6 py-3'>
-                <img src={country.flags.svg} alt='Flag' />
+                <img className="w-full max-w-[75px] aspect-square rounded-md object-cover" src={country.flags.svg} alt='Flag' />
               </td>
               <td className='px-6 py-3'>{country.name.common}</td>
             </tr>
