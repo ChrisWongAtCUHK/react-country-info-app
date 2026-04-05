@@ -12,9 +12,7 @@ function Countries() {
   })
 
   return (
-    <div className='App'>
-      <h1>TODO: list all countries</h1>
-    </div>
+    <h1 className='text-3xl font-bold underline text-blue-600'>Hello world!</h1>
   )
 }
 
