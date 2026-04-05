@@ -98,6 +98,7 @@ function Countries() {
         setPagination(count)
       })
       .catch(() => {})
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
